@@ -30,7 +30,6 @@ dependencies = [
  "anyhow",
  "bincode",
  "bytes",
- "serde",
  "thiserror",
 ]
 

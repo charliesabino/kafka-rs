@@ -1,19 +1,33 @@
-use serde::Serialize;
-use std::{io::Write, net::TcpListener};
+use std::{
+    io::{Read, Write},
+    net::TcpListener,
+};
 
 type MessageSize = i32;
 
-#[derive(Debug, Serialize)]
+#[derive(Debug)]
 struct ResponseHeader {
     correlation_id: i32,
 }
 
-pub struct Message {
+#[derive(Debug)]
+pub struct ResponseMessage {
     message_size: MessageSize,
     response_header: ResponseHeader,
 }
 
-impl Message {
+#[derive(Debug)]
+struct RequestHeader {
+    correlation_id: i32,
+}
+
+#[derive(Debug)]
+pub struct RequestMessage {
+    message_size: MessageSize,
+    response_header: RequestHeader,
+}
+
+impl ResponseMessage {
     fn new(message_size: MessageSize, response_header: ResponseHeader) -> Self {
         Self {
             message_size,
@@ -44,7 +58,7 @@ impl Broker {
         for stream in self.listener.incoming() {
             match stream {
                 Ok(mut _stream) => {
-                    let msg = Message::new(0, ResponseHeader { correlation_id: 7 });
+                    let msg = ResponseMessage::new(0, ResponseHeader { correlation_id: 7 });
                     _stream.write(&msg.to_bytes()).unwrap();
                 }
                 Err(e) => {}
